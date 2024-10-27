@@ -1,0 +1,33 @@
+services:
+  db:
+    image: mysql:8.2
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: rtahub
+      MYSQL_PASSWORD: rtahubpass
+      MYSQL_DATABASE: rtahub
+      TZ: "Asia/Tokyo"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - rtahub-mysql-data:/var/lib/mysql
+      - /tmp/dockerdir:/etc/mysql/conf.d/
+    ports:
+      - 3306:3306
+    platform: linux/amd64
+
+  front:
+    container_name: rtahub
+    build: .
+    volumes:
+      - ./rtahub:/rtahub
+    ports:
+      - 3000:3000
+    command: sh -c "npm install && npm run dev"
+    tty: true
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+volumes:
+  rtahub-mysql-data:
